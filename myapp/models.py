@@ -1,0 +1,46 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+
+# Create your models here.
+
+class UserInfoModel(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_pic = models.ImageField(upload_to="photos/userprofilepics", blank=True)
+    description = models.CharField(max_length=250, blank=True)
+    phone_number = models.PositiveSmallIntegerField(null=True)
+    college = models.CharField(max_length=40, blank=True)
+    branch = models.CharField(max_length=40, blank=True)
+    address = models.CharField(max_length=50, blank=True)
+    gender = models.CharField(max_length=10, default="", blank=True, null=True)
+    
+    def __str__(self):
+        return self.user.username
+
+
+class AdsInfoModel(models.Model):
+    user = models.ForeignKey(UserInfoModel, on_delete=models.CASCADE, related_name="posted_ads")
+    purpose = models.CharField(max_length=10)
+    category = models.CharField(max_length=10)
+    title = models.CharField(max_length=50)
+    price = models.FloatField(blank=True)
+    description = models.TextField()
+    posted_date = models.DateField()
+    
+    def __str__(self):
+        return self.title
+
+
+class AdsPhotosModel(models.Model):
+    pic_parent = models.ForeignKey(AdsInfoModel, on_delete=models.CASCADE, related_name="photos")
+    photo = models.ImageField(upload_to="photos/adpics")
+
+
+class FavouriteAdsModel(models.Model):
+    user = models.ForeignKey(UserInfoModel, on_delete=models.CASCADE, related_name="favourite_ads")
+    ad = models.OneToOneField(AdsInfoModel, on_delete=models.CASCADE)
+
+
+
+
+
